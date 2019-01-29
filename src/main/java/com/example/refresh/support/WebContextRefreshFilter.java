@@ -5,6 +5,7 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.SynchronousSink;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -13,12 +14,16 @@ public class WebContextRefreshFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        return Mono.create(monoSink->{
-            AtomicBoolean initState = RefreshScopeConfig.refreshContext;
-            if(initState.get()){
-               WrappedLock.wrappedLock();
-            }
-            monoSink.success();
-        }).then(chain.filter(exchange));
+        return Mono.just(RefreshScopeConfig.refreshContext)
+                .handle(this::conditionRefresh)
+                .flatMap(s-> chain.filter(exchange));
     }
+
+    private void conditionRefresh(AtomicBoolean initState, SynchronousSink<AtomicBoolean> handleSink){
+        if(initState.get()){
+            WrappedLock.wrappedLock();
+        }
+        handleSink.next(initState);
+    }
+
 }
