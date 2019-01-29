@@ -1,11 +1,10 @@
 package com.example.refresh.support;
 
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class WrappedLock {
-    private static final Lock lock = new ReentrantLock();
+    private static final ReentrantLock lock = new ReentrantLock();
     private static final Condition condition = lock.newCondition();
 
     public static void wrappedLock(){
@@ -17,7 +16,9 @@ public class WrappedLock {
     }
 
     public static void wrappedUnLock(){
-          condition.signalAll();
+        if(lock.hasQueuedThreads() && lock.hasWaiters(condition)){
+            condition.signalAll();
+        }
     }
 
 }

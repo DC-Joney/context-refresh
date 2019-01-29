@@ -29,4 +29,10 @@ public class DemoController {
         return Mono.empty();
     }
 
+    @RequestMapping("/test")
+    public Mono<Void> test1(){
+        System.out.println("#########################");
+        return Mono.empty();
+    }
+
 }
