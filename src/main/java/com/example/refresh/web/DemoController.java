@@ -1,7 +1,8 @@
 package com.example.refresh.web;
 
+import com.example.refresh.service.DemoService;
 import com.example.refresh.support.RefreshBean;
-import com.example.refresh.support.RefreshScopeConfig;
+import com.example.refresh.support.RefreshBeanRegister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,7 @@ import reactor.core.publisher.Mono;
 public class DemoController {
 
     @Autowired
-    private RefreshScopeConfig scopeConfig;
+    private RefreshBeanRegister scopeConfig;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -21,10 +22,13 @@ public class DemoController {
     @Autowired(required = false)
     private RefreshBean refreshBean;
 
+    @Autowired
+    private DemoService demoService;
+
     @RequestMapping("/refresh")
     public Mono<Void> test(){
         System.out.println(refreshBean);
-        scopeConfig.refresh();
+        demoService.demo();
         System.out.println(refreshBean);
         return Mono.empty();
     }

@@ -14,7 +14,7 @@ public class WebContextRefreshFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        return Mono.just(RefreshScopeConfig.refreshContext)
+        return Mono.just(RefreshContextHandler.refreshState)
                 .handle(this::conditionRefresh)
                 .flatMap(s-> chain.filter(exchange));
     }
